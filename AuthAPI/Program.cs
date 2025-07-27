@@ -1,4 +1,6 @@
 using AuthAPI.Models;
+using AuthAPI.Service;
+using AuthAPI.Service.Abstraction;
 using CouponAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
