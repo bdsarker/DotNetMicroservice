@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CouponAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/coupon")]
     [ApiController]
     public class CouponAPIController : ControllerBase
     {
@@ -82,29 +82,29 @@ namespace CouponAPI.Controllers
             return response;
         }
         [HttpPost]
-        public async Task<ResponseDto> CreateCoupon([FromBody] Coupon coupon)
+        public async Task<ResponseDto> CreateCoupon([FromBody] CouponDto couponDto)
         {
             ResponseDto response = new ResponseDto();
-            if (coupon == null || string.IsNullOrEmpty(coupon.CouponCode) || coupon.DiscountAmount <= 0)
+            if (couponDto == null || string.IsNullOrEmpty(couponDto.CouponCode) || couponDto.DiscountAmount <= 0)
             {
                 response.IsSuccess = false;
                 response.Message = "Invalid coupon data.";
                 return response;
             }
+            Coupon coupon = _mapper.Map<Coupon>(couponDto);
             _context.Coupons.Add(coupon);
             await _context.SaveChangesAsync();
-            // Map the created coupon to a CouponDto
-            CouponDto couponDto = _mapper.Map<CouponDto>(coupon);
+            
             response.Result = couponDto;
             response.IsSuccess = true;
             response.Message = "Coupon created successfully.";
             return response;
         }
         [HttpPut]
-        public async Task<ResponseDto> UpdateCoupon([FromBody] Coupon updatedCoupon)
+        public async Task<ResponseDto> UpdateCoupon([FromBody] CouponDto couponDto)
         {
             ResponseDto response = new ResponseDto();
-            Coupon? existingCoupon = await _context.Coupons.FirstOrDefaultAsync(c => c.CouponId == updatedCoupon.CouponId);
+            Coupon? existingCoupon = await _context.Coupons.FirstOrDefaultAsync(c => c.CouponId == couponDto.CouponId);
 
             if (existingCoupon == null)
             {
@@ -112,12 +112,31 @@ namespace CouponAPI.Controllers
                 response.Message = "Invalid coupon data.";
                 return response;
             }
-
-            _context.Coupons.Update(updatedCoupon);
+            // Map the changes onto the tracked entity
+            _mapper.Map(couponDto, existingCoupon);
             await _context.SaveChangesAsync();
-            response.Result = updatedCoupon;
+            
+            response.Result = existingCoupon;
             response.IsSuccess = true;
             response.Message = "Coupon updated successfully.";
+            return response;
+        }
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<ResponseDto> DeleteCoupon(int id)
+        {
+            ResponseDto response = new ResponseDto();
+            Coupon? coupon = await _context.Coupons.FirstOrDefaultAsync(c => c.CouponId == id);
+            if (coupon == null)
+            {
+                response.IsSuccess = false;
+                response.Message = "Coupon not found.";
+                return response;
+            }
+            _context.Coupons.Remove(coupon);
+            await _context.SaveChangesAsync();
+            response.IsSuccess = true;
+            response.Message = "Coupon deleted successfully.";
             return response;
         }
 
