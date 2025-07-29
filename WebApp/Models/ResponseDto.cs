@@ -1,4 +1,4 @@
-﻿namespace WebApp.Models.Dto
+﻿namespace WebApp.Models
 {
     public class ResponseDto
     {

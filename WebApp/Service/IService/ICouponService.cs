@@ -1,7 +1,6 @@
 ﻿using WebApp.Models;
-using WebApp.Models.Dto;
 
-namespace WebApp.Service
+namespace WebApp.Service.IService
 {
     public interface ICouponService
     {

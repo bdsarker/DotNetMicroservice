@@ -2,6 +2,7 @@
 using CouponAPI.Data;
 using CouponAPI.Models;
 using CouponAPI.Models.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -82,6 +83,7 @@ namespace CouponAPI.Controllers
             return response;
         }
         [HttpPost]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ResponseDto> CreateCoupon([FromBody] CouponDto couponDto)
         {
             ResponseDto response = new ResponseDto();
@@ -101,6 +103,7 @@ namespace CouponAPI.Controllers
             return response;
         }
         [HttpPut]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ResponseDto> UpdateCoupon([FromBody] CouponDto couponDto)
         {
             ResponseDto response = new ResponseDto();
@@ -123,6 +126,7 @@ namespace CouponAPI.Controllers
         }
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ResponseDto> DeleteCoupon(int id)
         {
             ResponseDto response = new ResponseDto();
